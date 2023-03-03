@@ -110,7 +110,6 @@ function App() {
     <Box sx={{
       backgroundColor: "#ebebeb",
     }}>
-      <HeaderNav />
       <Container sx={{
         marginTop: "20px"
       }}>

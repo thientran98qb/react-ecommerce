@@ -12,8 +12,15 @@ import Button from '@mui/material/Button';
 import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
 import AdbIcon from '@mui/icons-material/Adb';
+import { Link, NavLink } from 'react-router-dom';
 
-const pages = ['Products', 'Pricing', 'Blog'];
+const pages = [
+  {
+    id: 1,
+    name: 'Products',
+    link: '/products'
+  }
+];
 const settings = ['Profile', 'Account', 'Dashboard', 'Logout'];
 
 function HeaderNav() {
@@ -36,27 +43,30 @@ function HeaderNav() {
   };
 
   return (
-    <AppBar position="static" color="secondary">
+    <AppBar position="static" color="primary">
       <Container maxWidth="xl">
         <Toolbar disableGutters>
           <AdbIcon sx={{ display: { xs: 'none', md: 'flex' }, mr: 1 }} />
-          <Typography
-            variant="h6"
-            noWrap
-            component="a"
-            href="/"
-            sx={{
-              mr: 2,
-              display: { xs: 'none', md: 'flex' },
-              fontFamily: 'monospace',
-              fontWeight: 700,
-              letterSpacing: '.3rem',
-              color: 'inherit',
-              textDecoration: 'none',
-            }}
+          <NavLink
+            to="/"
+            style={{ color: 'inherit', textDecoration: 'none' }}
           >
-            LOGO
-          </Typography>
+            <Typography
+              variant="h6"
+              noWrap
+              sx={{
+                mr: 2,
+                display: { xs: 'none', md: 'flex' },
+                fontFamily: 'monospace',
+                fontWeight: 700,
+                letterSpacing: '.3rem',
+                color: 'inherit',
+                textDecoration: 'none',
+              }}
+            >
+              TDev
+            </Typography>
+          </NavLink>
 
           <Box sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' } }}>
             <IconButton
@@ -88,8 +98,16 @@ function HeaderNav() {
               }}
             >
               {pages.map((page) => (
-                <MenuItem key={page} onClick={handleCloseNavMenu}>
-                  <Typography textAlign="center">{page}</Typography>
+                <MenuItem key={page.id} onClick={handleCloseNavMenu}>
+                  <NavLink
+                    to="/products"
+                    // style={({ isActive }) =>
+                    //   isActive ? activeStyle : undefined
+                    // }
+                    style={{ color: 'inherit', textDecoration: 'none' }}
+                  >
+                    <Typography>{page.name}</Typography>
+                  </NavLink>
                 </MenuItem>
               ))}
             </Menu>
@@ -99,7 +117,6 @@ function HeaderNav() {
             variant="h5"
             noWrap
             component="a"
-            href=""
             sx={{
               mr: 2,
               display: { xs: 'flex', md: 'none' },
@@ -116,17 +133,31 @@ function HeaderNav() {
           <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
             {pages.map((page) => (
               <Button
-                key={page}
+                key={page.id}
                 onClick={handleCloseNavMenu}
                 sx={{ my: 2, color: 'white', display: 'block' }}
               >
-                {page}
+                <NavLink
+                  to="/products"
+                  // style={({ isActive }) =>
+                  //   isActive ? activeStyle : undefined
+                  // }
+                  style={{ color: 'inherit', textDecoration: 'none' }}
+                >
+                  <Typography>{page.name}</Typography>
+                </NavLink>
               </Button>
             ))}
           </Box>
 
           <Box sx={{ flexGrow: 0 }}>
-            <Tooltip title="Open settings">
+            <NavLink
+              to="/login"
+              style={{ color: 'inherit', textDecoration: 'none' }}
+            >
+              <Typography>Login</Typography>
+            </NavLink>
+            {/* <Tooltip title="Open settings">
               <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
                 <Avatar alt="Remy Sharp" src="/static/images/avatar/2.jpg" />
               </IconButton>
@@ -152,7 +183,7 @@ function HeaderNav() {
                   <Typography textAlign="center">{setting}</Typography>
                 </MenuItem>
               ))}
-            </Menu>
+            </Menu> */}
           </Box>
         </Toolbar>
       </Container>
