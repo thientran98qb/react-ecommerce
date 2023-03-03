@@ -10,7 +10,9 @@ const MainLayout = (props: Props) => {
   return (
     <>
       <HeaderNav/>
-      <Outlet/>
+      <Box marginTop="67px">
+        <Outlet/>
+      </Box>
       <Footer/>
     </>
   )

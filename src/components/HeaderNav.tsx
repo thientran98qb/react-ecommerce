@@ -43,7 +43,7 @@ function HeaderNav() {
   };
 
   return (
-    <AppBar position="static" color="primary">
+    <AppBar position="fixed" color="primary">
       <Container maxWidth="xl">
         <Toolbar disableGutters>
           <AdbIcon sx={{ display: { xs: 'none', md: 'flex' }, mr: 1 }} />
@@ -139,10 +139,14 @@ function HeaderNav() {
               >
                 <NavLink
                   to="/products"
-                  // style={({ isActive }) =>
-                  //   isActive ? activeStyle : undefined
-                  // }
-                  style={{ color: 'inherit', textDecoration: 'none' }}
+                  style={({ isActive }) =>
+                    isActive ? {
+                      color: 'red',
+                      textDecoration: 'none'
+                    } : {
+                      color: 'inherit', textDecoration: 'none'
+                    }
+                  }
                 >
                   <Typography>{page.name}</Typography>
                 </NavLink>

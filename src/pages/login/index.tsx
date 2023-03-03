@@ -1,9 +1,29 @@
-import { Box, Button, Card, CardContent, FormControl, FormGroup, FormHelperText, Input, InputLabel, Stack, TextField, Typography } from '@mui/material'
-import React from 'react'
+import { yupResolver } from '@hookform/resolvers/yup';
+import { Box, Button, Card, CardContent, FormGroup, Stack, Typography } from '@mui/material';
+import { useForm } from 'react-hook-form';
+import { BaseInput } from '../../components/BaseInput';
+
+import * as yup from 'yup';
 
 type Props = {}
 
 const LoginPage = (props: Props) => {
+  const schema = yup.object().shape({
+    email: yup.string().required('Vui longf nhap email'),
+    password: yup.string().required('Vui longf nhap password'),
+  })
+  const { control, handleSubmit } = useForm<Record<string, any>>({
+    defaultValues: {
+      email: '',
+      password: ''
+    },
+    resolver: yupResolver(schema)
+  });
+
+  const onSubmit = (data: any) => {
+    console.log(data);
+  }
+
   return (
     <Box
       sx={{backgroundColor: "#ebebeb", width: "100%"}}
@@ -14,15 +34,9 @@ const LoginPage = (props: Props) => {
             <Typography textAlign="center" variant="h5" fontWeight="bold" marginBottom="10px">Agent Login</Typography>
             <Typography textAlign="center">Hey, welcome to login my page !!!</Typography>
             <FormGroup sx={{padding: "20px 0", rowGap: "10px"}}>
-              <FormControl>
-                <TextField label="Username" variant="outlined" size='small'/>
-                <FormHelperText id="my-helper-text">We'll never share your email.</FormHelperText>
-              </FormControl>
-              <FormControl>
-                <TextField label="Password" variant="outlined" size='small'/>
-                <FormHelperText id="my-helper-text">We'll never share your email.</FormHelperText>
-              </FormControl>
-              <Button variant='contained'>Sign In</Button>
+              <BaseInput name='email' control={control} label="Enter email" rules={{ required: true }}/>
+              <BaseInput name='password' control={control} label="Enter password" rules={{ required: true }}/>
+              <Button variant='contained' onClick={handleSubmit(onSubmit)}>Sign In</Button>
             </FormGroup>
             <Box>
               <Typography textAlign="center">-- Or sign in with --</Typography>
