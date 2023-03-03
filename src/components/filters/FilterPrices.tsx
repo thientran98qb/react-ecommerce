@@ -1,14 +1,23 @@
 import { Box, Button, TextField, Typography } from '@mui/material'
-import { ChangeEvent, useState } from 'react'
+import { ChangeEvent, useEffect, useMemo, useState } from 'react'
 type PriceFilterProps = {
-  onChange: (newParams: any) => void
+  onChange: (newParams: any) => void,
+  filters: any
 }
 
-const FilterPrices = ({onChange}: PriceFilterProps) => {
+const FilterPrices = ({onChange, filters}: PriceFilterProps) => {
   const [values, setValues] = useState({
     salePrice_gte: 0,
     salePrice_lte: 0
   })
+
+  useEffect(() => {
+    setValues({
+      salePrice_gte: filters.salePrice_gte || 0,
+      salePrice_lte: filters.salePrice_lte || 0
+    })
+  }, [filters.salePrice_gte, filters.salePrice_lte])
+
   const handleOnChange = (e: ChangeEvent<HTMLInputElement>) => {
     const {name, value} = e.target
 
@@ -20,6 +29,7 @@ const FilterPrices = ({onChange}: PriceFilterProps) => {
   const handleSubmitFilterPrice = () => {
     if (onChange) onChange(values)
   }
+
   return (
     <div>
       <Box sx={{py: "10px", px: "20px"}}>
@@ -36,15 +46,6 @@ const FilterPrices = ({onChange}: PriceFilterProps) => {
         </Box>
         <Button sx={{my: "15px"}} variant='outlined' onClick={handleSubmitFilterPrice}>Áp dụng</Button>
       </Box>
-
-      {/* <Divider/>
-      <Box sx={{py: "10px", px: "20px"}}>
-        <Typography sx={{textTransform: "uppercase", fontWeight: "bold", fontSize: "14px"}}>Dịch vụ</Typography>
-        <Form>
-          <FormControlLabel control={<Checkbox defaultChecked />} label="Có khuyến mãi" />
-          <FormControlLabel control={<Checkbox />} label="Vận chuyển miễn phí" />
-        </Form>
-      </Box> */}
     </div>
   )
 }

@@ -4,6 +4,7 @@ export default interface ProductType {
   originalPrice: number,
   salePrice: number,
   name: string,
+  isFreeShip: boolean,
   thumbnail: {
     url: string
   }

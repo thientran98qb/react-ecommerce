@@ -1,6 +1,6 @@
 import { Box, Container, Grid, Pagination, Paper, Tab, Tabs, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import apiProducts from './api/apiProducts';
 import HeaderNav from './components/HeaderNav';
 import ProductItem from './components/ProductItem';
@@ -8,7 +8,9 @@ import ProductSkeleton from './components/ProductSkeleton';
 import ProductFilters from './components/filters/ProductFilters';
 import ProductType from './types/product';
 import { PaginationType } from './types/response';
-
+import FilterViewer from './components/filters/FilterViewer';
+import { useNavigate, useLocation } from 'react-router-dom';
+import queryString from 'query-string'
 const CustomizedPagination = styled(Pagination)`
   .MuiPagination-ul {
     justify-content: center
@@ -16,6 +18,18 @@ const CustomizedPagination = styled(Pagination)`
 `;
 
 function App() {
+  const navigate = useNavigate()
+  const location = useLocation()
+  const queryParams = useMemo(() => {
+    const params = queryString.parse(location.search, {parseBooleans: true, parseNumbers: true})
+    return {
+      ...params,
+      _page: Number.parseInt(params._page as string) || 1,
+      _limit: Number.parseInt(params._limit as string) || 9,
+      _sort: params._sort || 'salePrice:ASC'
+    }
+  }, [location.search])
+
   const LABELTAB = [
     {
       label: "Giá cao đến thấp",
@@ -30,48 +44,66 @@ function App() {
   const [pagination, setPagination] = useState<PaginationType>()
   const [loading, setLoading] = useState(true)
   const [tab, setTab] = useState("DESC")
-  const [filters, setFilters] = useState({
-    _page: 1,
-    _limit: 9,
-    _sort: 'salePrice:ASC'
-  })
+
+  useEffect(() => {
+    navigate({
+      pathname: location.pathname,
+      search: queryString.stringify(queryParams)
+    })
+  }, [navigate ,queryParams])
   useEffect(() => {
     const getProducts = async () => {
-      const products = await apiProducts.getAllProducts(filters)
+      const products = await apiProducts.getAllProducts(queryParams)
       setLoading(false)
       setProducts(products.data)
       setPagination(products.pagination)
     }
     getProducts()
-  }, [filters])
+  }, [queryParams])
 
   const handleChangePagination = (e: any, value: number) => {
     setLoading(true)
-    setFilters(prevState => {
-      return {
-        ...prevState,
-        _page: value
-      }
+    const filters = {
+      ...queryParams,
+      _page: value
+    }
+    navigate({
+      pathname: location.pathname,
+      search: queryString.stringify(filters)
     })
   }
 
   const handleChangeTab = (e: any, value: any) => {
     setTab(value)
 
-    setFilters(prevState => {
-      return {
-        ...prevState,
-        "_sort": `salePrice:${value}`
-      }
+    const filters = {
+      ...queryParams,
+      _sort: `salePrice:${value}`
+    }
+    navigate({
+      pathname: location.pathname,
+      search: queryString.stringify(filters)
     })
   }
 
   const handleChangeCategory = (newFilters: any) => {
     setLoading(true)
-    setFilters(prevState => ({
-      ...prevState,
+    const filters = {
+      ...queryParams,
       ...newFilters
-    }))
+    }
+    navigate({
+      pathname: location.pathname,
+      search: queryString.stringify(filters)
+    })
+  }
+
+  const handleSetNewFilter = (newFilters: any) => {
+    setLoading(true)
+    navigate({
+      pathname: location.pathname,
+      search: queryString.stringify(newFilters)
+    })
   }
 
   return (
@@ -85,7 +117,7 @@ function App() {
         <Grid container spacing={2}>
           <Grid item xs={6} md={4}>
             <Paper sx={{borderRadius: "0"}} elevation={0}>
-              <ProductFilters onChange={handleChangeCategory}/>
+              <ProductFilters filters={queryParams} onChange={handleChangeCategory}/>
             </Paper>
           </Grid>
           <Grid item xs={6} md={8}>
@@ -95,6 +127,7 @@ function App() {
                   {LABELTAB.map(({label, valueSort}, index) => (<Tab key={index} label={label} value={valueSort} />))}
                 </Tabs>
               </Box>
+              <FilterViewer filters={queryParams} onChange={handleSetNewFilter} />
               <Typography variant='h5' py={2} sx={{fontWeight: "bold"}}>Bộ sưu tập nổi bật</Typography>
               <Box
                 sx={{
@@ -105,14 +138,14 @@ function App() {
               >
                 {!loading ? products.map((product, index) => (
                   <ProductItem key={index} product={product}/>
-                )): <ProductSkeleton size={filters._limit}/>}
+                )): <ProductSkeleton size={queryParams._limit}/>}
               </Box>
               {pagination ?
                 <CustomizedPagination
                   sx={{
                     my: "20px"
                   }}
-                  count={Math.ceil(pagination.total / pagination.limit)} page={filters._page}
+                  count={Math.ceil(pagination.total / pagination.limit)} page={queryParams._page}
                   onChange={handleChangePagination}
                   color="secondary"
                 /> : null
